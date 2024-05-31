@@ -6,29 +6,40 @@
 /*   By: zaldhahe <zaldhahe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/30 21:10:41 by zaldhahe          #+#    #+#             */
-/*   Updated: 2024/05/30 22:10:51 by zaldhahe         ###   ########.fr       */
+/*   Updated: 2024/05/31 20:25:51 by zaldhahe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
+#include <stdio.h>
 
-void ft_handler(int sigusr)
+void	ft_handler(int sigusr)
 {
-	if (sigusr == SIGUSR1)
-		write(1, "1\n", 2);
-	else
-		write(1, "0\n", 2);
+	static unsigned char	byte;
+	static int				i;
+
+	i++;
+	if (sigusr == SIGUSR2)
+		byte |= 1;
+	if (i == 8)
+	{
+		write(1, &byte, 1);
+		byte = 0;
+		i = 0;
+	}
+	byte <<= 1;
 }
 
-int main()
+int	main(void)
 {
-	pid_t PID;
+	pid_t	pid;
 
-	PID = getpid();
-	ft_putnbr(PID);
+	pid = getpid();
+	ft_putnbr(pid);
+	write(1, "\n", 1);
 	signal(SIGUSR1, ft_handler);
 	signal(SIGUSR2, ft_handler);
-	while(1)
+	while (1)
 		pause();
 	return (0);
 }
